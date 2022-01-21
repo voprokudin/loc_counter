@@ -1,11 +1,21 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Lines Of Code Counter'
+description: 'Github Action that counts lines of code'
+author: 'Vasyl Prokudin'
 inputs:
-  milliseconds: # change this
+  fileOrFolderToProcess:
+    required: false
+    description: 'The file or folder to process'
+    default: '.'
+  filesAndFoldersToIgnore:
+    required: false
+    description: 'A list of directories to ignore. Supports glob patterns.'
+    default: '["node_modules", ".git", "dist", ".github"]'
+  maxCount:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'The maximum number of LOC for the sum of files'
+outputs:
+  locs:
+     description: 'The amount of LOC of your project without comments and empty lines'
 runs:
   using: 'node12'
   main: 'dist/index.js'
