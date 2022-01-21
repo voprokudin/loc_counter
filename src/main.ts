@@ -1,54 +1,42 @@
 import * as core from '@actions/core'
 import sloc from 'node-sloc'
-// import {wait} from './wait'
-//
-// async function run(): Promise<void> {
-//   try {
-//     const ms: string = core.getInput('milliseconds')
-//     core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-//
-//     core.debug(new Date().toTimeString())
-//     await wait(parseInt(ms, 10))
-//     core.debug(new Date().toTimeString())
-//
-//     core.setOutput('time', new Date().toTimeString())
-//   } catch (error) {
-//     if (error instanceof Error) core.setFailed(error.message)
-//   }
-// }
-//
-// run()
-// extract inputs
-const filesAndFoldersToIgnore = JSON.parse(
-  core.getInput('filesAndFoldersToIgnore')
-)
-const maxCount: number = +core.getInput('maxCount')
-const fileOrFolderToProcess: string = core.getInput('fileOrFolderToProcess')
 
-// calculate loc stats
-const stats = await sloc({
-  path: fileOrFolderToProcess,
-  extensions: ['ts', 'html', 'css', 'scss'],
-  ignorePaths: filesAndFoldersToIgnore,
-  ignoreDefault: true
-})
+async function run(): Promise<void> {
+  try {
+    // extract inputs
+    const filesAndFoldersToIgnore = JSON.parse(
+      core.getInput('filesAndFoldersToIgnore')
+    )
+    const maxCount: number = +core.getInput('maxCount')
+    const fileOrFolderToProcess: string = core.getInput('fileOrFolderToProcess')
 
-// set the output of the action
-core.setOutput('locs', stats?.sloc)
+    // calculate loc stats
+    const stats = await sloc({
+      path: fileOrFolderToProcess,
+      extensions: ['ts', 'html', 'css', 'scss'],
+      ignorePaths: filesAndFoldersToIgnore,
+      ignoreDefault: true
+    })
 
-// debug information is only available when enabling debug logging https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging
-core.debug(`LOC ${stats?.sloc?.toString() || ''}`)
-core.debug(`Max Count ${maxCount.toString() || ''}`)
+    // set the output of the action
+    core.setOutput('locs', stats?.sloc)
 
-// verify that locs threshold is not exceeded
-if ((stats?.sloc || 0) > maxCount) {
-  core.debug('Threshold exceeded')
-  throw new Error(
-    `The total amount of lines exceeds the maximum allowed.
-     Total Amount: ${stats?.sloc}
-     Max Count: ${maxCount}`
-  )
+    // debug information is only available when enabling debug logging https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging
+    core.debug(`LOC ${stats?.sloc?.toString() || ''}`)
+    core.debug(`Max Count ${maxCount.toString() || ''}`)
+
+    // verify that locs threshold is not exceeded
+    if ((stats?.sloc || 0) > maxCount) {
+      core.debug('Threshold exceeded')
+      throw new Error(
+        `The total amount of lines exceeds the maximum allowed.
+        Total Amount: ${stats?.sloc}
+        Max Count: ${maxCount}`
+      )
+    }
+  } catch (error) {
+    core.setFailed(error.message)
+  }
 }
-catch (error) {
-  core.setFailed(error.message)
-}
+
+run()

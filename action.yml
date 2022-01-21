@@ -1,11 +1,7 @@
-name: 'Lines Of Code Counter'
-description: 'Github Action that counts lines of code'
-author: 'Vasyl Prokudin'
+name: 'Lines Of Code Alert'
+description: 'Github Action that throws an error when the specified maximum LOC count is reached by any file'
+author: 'Nacho Vazquez -- This Dot, Inc'
 inputs:
-  milliseconds: 1000
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
   fileOrFolderToProcess:
     required: false
     description: 'The file or folder to process'
@@ -19,7 +15,7 @@ inputs:
     description: 'The maximum number of LOC for the sum of files'
 outputs:
   locs:
-     description: 'The amount of LOC of your project without comments and empty lines'
+    description: 'The amount of LOC of your project without comments and empty lines'
 runs:
   using: 'node12'
   main: 'dist/index.js'
